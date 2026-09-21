@@ -116,9 +116,12 @@ def calculate_performance():
         except ZeroDivisionError:
             print("Average: Cannot calculate")
 
-        print("Highest:", student.calculate_highest())
-        print("Lowest:", student.calculate_lowest())
-        print("Grade:", student.calculate_grade())
+        try:
+            print("Highest:", student.calculate_highest())
+            print("Lowest:", student.calculate_lowest())
+            print("Grade:", student.calculate_grade())
+        except ValueError as e:
+            print("Performance error:", e)
 
 
 def add_task():
@@ -203,8 +206,10 @@ def filter_tasks():
 
     if choice == "1":
         status = "Pending"
+
     elif choice == "2":
         status = "Completed"
+
     else:
         print("Invalid choice.")
         return
@@ -218,6 +223,7 @@ def filter_tasks():
             print("Task:", task.task_name)
             print("Status:", task.status)
             print("Priority:", task.priority)
+
             found = True
 
     if not found:
@@ -231,6 +237,7 @@ def delete_student():
 
     try:
         student_id = int(input("Enter Student ID to delete: "))
+
     except ValueError:
         print("Please enter a valid Student ID.")
         return
@@ -281,6 +288,148 @@ def save_data():
     except FileNotFoundError:
         print("Data folder not found.")
 
+    except PermissionError:
+        print("Permission denied. Cannot save data.")
+
+
+def load_data():
+    global students
+    global tasks
+
+    try:
+        with open("data/students.json", "r") as file:
+            student_data = json.load(file)
+
+        students = []
+
+        for data in student_data:
+            student = Student(
+                data["id"],
+                data["name"],
+                data["age"],
+                data["email"],
+                data["course"],
+                data["subjects"],
+                data["marks"]
+            )
+
+            students.append(student)
+
+        print("Student data loaded successfully.")
+
+    except FileNotFoundError:
+        print("students.json not found. Starting with empty student data.")
+
+    except json.JSONDecodeError:
+        print("students.json contains invalid JSON.")
+
+    except KeyError as e:
+        print("Missing student field:", e)
+
+    try:
+        with open("data/tasks.json", "r") as file:
+            task_data = json.load(file)
+
+        tasks = []
+
+        for data in task_data:
+            task = Task(
+                data["task_id"],
+                data["task_name"],
+                data["description"],
+                data["deadline"],
+                data["status"],
+                data["priority"]
+            )
+
+            tasks.append(task)
+
+        print("Task data loaded successfully.")
+
+    except FileNotFoundError:
+        print("tasks.json not found. Starting with empty task data.")
+
+    except json.JSONDecodeError:
+        print("tasks.json contains invalid JSON.")
+
+    except KeyError as e:
+        print("Missing task field:", e)
+
+
+def update_student():
+    if not students:
+        print("\nNo students found.")
+        return
+
+    try:
+        student_id = int(input("Enter Student ID to update: "))
+
+    except ValueError:
+        print("Please enter a valid Student ID.")
+        return
+
+    for student in students:
+
+        if student.student_id == student_id:
+
+            print("\nStudent found.")
+
+            name = input(
+                f"Enter Name [{student.name}]: "
+            )
+
+            if name:
+                student.name = name
+
+            email = input(
+                f"Enter Email [{student.email}]: "
+            )
+
+            if email:
+                student.email = email
+
+            course = input(
+                f"Enter Course [{student.course}]: "
+            )
+
+            if course:
+                student.course = course
+
+            age = input(
+                f"Enter Age [{student.age}]: "
+            )
+
+            if age:
+                try:
+                    student.age = int(age)
+
+                except ValueError:
+                    print("Invalid age. Existing age kept.")
+
+            save_data()
+
+            print("Student updated successfully.")
+            return
+
+    print("Student not found.")
+
+
+def test_key_error():
+    student_data = {
+        "id": "ST101",
+        "name": "Rahul",
+        "course": "Python"
+    }
+
+    try:
+        print(student_data["email"])
+
+    except KeyError:
+        print("KeyError handled successfully.")
+
+
+load_data()
+
 
 while True:
 
@@ -300,6 +449,8 @@ while True:
     print("10. Exit")
     print("11. Delete Task")
     print("12. Filter Tasks")
+    print("13. Update Student")
+    print("14. Test KeyError")
 
     choice = input("Enter your choice: ")
 
@@ -339,6 +490,12 @@ while True:
 
     elif choice == "12":
         filter_tasks()
+
+    elif choice == "13":
+        update_student()
+
+    elif choice == "14":
+        test_key_error()
 
     else:
         print("Invalid choice. Please try again.")
