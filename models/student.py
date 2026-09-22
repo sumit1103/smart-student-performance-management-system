@@ -1,13 +1,20 @@
-class Student:
+from models.user import User
+
+
+class Student(User):
 
     def __init__(self, student_id, name, age, email, course, subjects, marks):
+
+        super().__init__(student_id, name, email)
+
         self.student_id = student_id
-        self.name = name
         self.age = age
-        self.email = email
         self.course = course
         self.subjects = subjects
         self.marks = marks
+
+    def display_role(self):
+        return "Role: Student"
 
     def calculate_total(self):
         return sum(self.marks)
@@ -15,16 +22,19 @@ class Student:
     def calculate_average(self):
         if not self.marks:
             raise ZeroDivisionError("No marks available.")
+
         return sum(self.marks) / len(self.marks)
 
     def calculate_highest(self):
         if not self.marks:
             raise ValueError("No marks available.")
+
         return max(self.marks)
 
     def calculate_lowest(self):
         if not self.marks:
             raise ValueError("No marks available.")
+
         return min(self.marks)
 
     def calculate_grade(self):
