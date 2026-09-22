@@ -33,3 +33,16 @@ print("Name:", teacher.name)
 print("Email:", teacher.email)
 print("Subject:", teacher.subject)
 print("Assigned Students:", teacher.assigned_students)
+
+
+print("\nPolymorphism")
+print(student.display_role())
+print(teacher.display_role())
+
+
+print("\nEncapsulation")
+print("Current Marks:", student.get_marks())
+
+student.set_marks([90, 92, 95])
+
+print("Updated Marks:", student.get_marks())

@@ -1,5 +1,7 @@
 from models.student import Student
 from models.task import Task
+from utils.file_handler import save_json, load_json
+from utils.validators import validate_marks
 import json
 
 students = []
@@ -27,7 +29,7 @@ def add_student():
         try:
             mark = float(input(f"Enter Marks for {subject}: "))
 
-            if mark < 0 or mark > 100:
+            if not validate_marks([mark]):
                 print("Marks should be between 0 and 100.")
                 return
 
@@ -253,7 +255,6 @@ def delete_student():
 
 def save_data():
     student_data = []
-    task_data = []
 
     for student in students:
         student_data.append({
@@ -263,8 +264,10 @@ def save_data():
             "email": student.email,
             "course": student.course,
             "subjects": student.subjects,
-            "marks": student.marks
+            "marks": student.get_marks()
         })
+
+    task_data = []
 
     for task in tasks:
         task_data.append({
@@ -277,28 +280,20 @@ def save_data():
         })
 
     try:
-        with open("data/students.json", "w") as file:
-            json.dump(student_data, file, indent=4)
-
-        with open("data/tasks.json", "w") as file:
-            json.dump(task_data, file, indent=4)
+        save_json("data/students.json", student_data)
+        save_json("data/tasks.json", task_data)
 
         print("Data saved successfully.")
 
     except FileNotFoundError:
         print("Data folder not found.")
 
-    except PermissionError:
-        print("Permission denied. Cannot save data.")
-
-
 def load_data():
     global students
     global tasks
 
     try:
-        with open("data/students.json", "r") as file:
-            student_data = json.load(file)
+        student_data = load_json("data/students.json")
 
         students = []
 
@@ -327,8 +322,7 @@ def load_data():
         print("Missing student field:", e)
 
     try:
-        with open("data/tasks.json", "r") as file:
-            task_data = json.load(file)
+        task_data = load_json("data/tasks.json")
 
         tasks = []
 
@@ -350,7 +344,7 @@ def load_data():
         print("tasks.json not found. Starting with empty task data.")
 
     except json.JSONDecodeError:
-        print("tasks.json contains invalid JSON.")
+        print("Invalid task JSON data.")
 
     except KeyError as e:
         print("Missing task field:", e)

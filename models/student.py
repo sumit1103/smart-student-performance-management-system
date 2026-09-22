@@ -11,31 +11,41 @@ class Student(User):
         self.age = age
         self.course = course
         self.subjects = subjects
-        self.marks = marks
+        self.__marks = marks
 
     def display_role(self):
         return "Role: Student"
 
+    def get_marks(self):
+        return self.__marks
+
+    def set_marks(self, marks):
+        for mark in marks:
+            if mark < 0 or mark > 100:
+                raise ValueError("Marks should be between 0 and 100.")
+
+        self.__marks = marks
+
     def calculate_total(self):
-        return sum(self.marks)
+        return sum(self.__marks)
 
     def calculate_average(self):
-        if not self.marks:
+        if not self.__marks:
             raise ZeroDivisionError("No marks available.")
 
-        return sum(self.marks) / len(self.marks)
+        return sum(self.__marks) / len(self.__marks)
 
     def calculate_highest(self):
-        if not self.marks:
+        if not self.__marks:
             raise ValueError("No marks available.")
 
-        return max(self.marks)
+        return max(self.__marks)
 
     def calculate_lowest(self):
-        if not self.marks:
+        if not self.__marks:
             raise ValueError("No marks available.")
 
-        return min(self.marks)
+        return min(self.__marks)
 
     def calculate_grade(self):
         average = self.calculate_average()
