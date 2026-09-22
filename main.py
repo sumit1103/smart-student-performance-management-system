@@ -70,7 +70,7 @@ def view_students():
         print("Email:", student.email)
         print("Course:", student.course)
         print("Subjects:", student.subjects)
-        print("Marks:", student.marks)
+        print("Marks:", student.get_marks())
 
 
 def search_student():
